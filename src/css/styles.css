@@ -1,41 +1,135 @@
-/* Basic styles for demonstration */
-
-body {
-  font-family: Arial, sans-serif;
+/* Reset or base styles */
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-.container {
-  width: 400px;
-  margin: 50px auto;
+body {
+  font-family: Arial, sans-serif;
+  background-color: #01011f; /* WhatsApp-like background */
+  color: #333;
+}
+
+/* Top bar that looks like WhatsApp's green */
+.chat-nav {
+  background-color: #0d0c46; /* WhatsApp green */
+  color: #fff;
+  display: flex;
+  align-items: center;
   padding: 20px;
-  border: 1px solid #ccc;
+  justify-content: space-between;
 }
 
-h1,
-h2 {
-  text-align: center;
+.chat-nav-title {
+  font-size: 20px;
+  font-weight: bold;
 }
 
-form {
+.chat-nav a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 14px;
+}
+.chat-nav a:hover {
+  text-decoration: underline;
+}
+
+.chat-container {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 50%;
+  height: 500px;
+  margin: 20px auto; 
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="password"],
-select {
-  margin-bottom: 10px;
-  padding: 8px;
+#alert.chat-alert {
+  padding: 5px;
+  text-align: center;
+  background-color: #ffc107; /* or any color you like */
+  color: #000;
+  display: none; /* hidden by default; show via JS if needed */
 }
 
-button {
+.chat-messages {
+  flex: 1;
   padding: 10px;
-  cursor: pointer;
+  overflow-y: auto;
+  background-color: #030731; /* typical chat background color */
 }
 
+.chat-bubble {
+  max-width: 80%;
+  margin: 5px 0;
+  padding: 8px 10px;
+  border-radius: 7px;
+  clear: both;
+  position: relative;
+}
+
+.chat-bubble.outgoing {
+  background-color: #c6c9f8; /* WhatsApp green bubble */
+  margin-left: auto;
+  text-align: left;
+}
+
+.chat-bubble.incoming {
+  background-color: #a57a7a;
+  margin-right: auto;
+  text-align: left;
+}
+
+.chat-bubble small {
+  font-size: 10px;
+  color: #999;
+  display: block;
+  margin-top: 5px;
+  text-align: right;
+}
+
+/* Input area at the bottom */
+.chat-input-area {
+  display: flex;
+  gap: 5px;
+  padding: 10px;
+  background-color: #131246;
+  align-items: center;
+}
+
+.chat-input-area select,
+.chat-input-area input {
+  padding: 8px;
+  border: 1px solid #024707;
+  border-radius: 4px;
+  flex: 1;
+}
+
+.chat-input-area select {
+  width: 50px;
+}
+
+.chat-input-area button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: #075e54; /* match top bar color */
+  color: #fff;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.chat-input-area button:hover {
+  background-color: #0a7a65;
+}
+
+/* Example alert styles if needed */
 .alert {
   margin: 10px 0;
   padding: 10px;
@@ -53,17 +147,11 @@ button {
   color: #7a2d2d;
 }
 
-nav {
-  background-color: #f2f2f2;
+#messagesContainer div {
+  display: flex;
+  flex-direction: column;
   padding: 10px;
-}
-
-nav a {
-  margin-right: 15px;
-  text-decoration: none;
-  color: #333;
-}
-
-nav a:hover {
-  text-decoration: underline;
+  border-bottom: 1px solid #ccc;
+  background-color: rgb(26, 26, 65);
+  color: #fff;
 }

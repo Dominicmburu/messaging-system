@@ -1,0 +1,195 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+nav {
+  background-color: #2d3e50;
+  padding: 10px;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  margin-right: 15px;
+  font-weight: bold;
+}
+nav a:hover {
+  text-decoration: underline;
+}
+
+.container {
+  width: 600px;
+  margin: 30px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#alert {
+  margin-bottom: 15px;
+  text-align: center;
+  min-height: 20px;
+}
+
+#createUserForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+#createUserForm input[type="text"],
+#createUserForm input[type="password"],
+#createUserForm select {
+  flex: 1 1 calc(50% - 10px);
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+#createUserForm button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  background-color: #2d3e50;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 5px;
+  transition: background-color 0.2s ease;
+}
+#createUserForm button[type="submit"]:hover {
+  background-color: #1b2733;
+}
+
+#usersList {
+  margin-top: 10px;
+}
+
+.user-card {
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 10px;
+  margin: 10px 0;
+  background-color: #fafafa;
+}
+
+.user-card p {
+  margin: 5px 0;
+}
+
+.user-card button {
+  margin-right: 10px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.user-card .updateBtn {
+  background-color: #4caf50;
+  color: #fff;
+}
+.user-card .updateBtn:hover {
+  background-color: #388e3c;
+}
+
+.user-card .deleteBtn {
+  background-color: #e91e63;
+  color: #fff;
+}
+.user-card .deleteBtn:hover {
+  background-color: #c2185b;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: auto;
+  padding: 20px;
+  border-radius: 6px;
+  width: 300px;
+  max-width: 90%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.modal-content h3 {
+  margin-bottom: 10px;
+}
+
+.modal-content input[type="text"],
+.modal-content input[type="password"],
+.modal-content select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
+.modal-content button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
+  margin: 5px;
+  background-color: #2d3e50;
+  color: #fff;
+  transition: background-color 0.2s ease;
+}
+.modal-content button:hover {
+  background-color: #1b2733;
+}
+
+.modal-content p {
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+.alert {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+.alert.success {
+  background-color: #e0ffe0;
+  color: #2d7a2d;
+}
+.alert.error {
+  background-color: #ffe0e0;
+  color: #7a2d2d;
+}

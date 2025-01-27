@@ -18,9 +18,11 @@ registerForm.addEventListener("submit", async (e) => {
 
     if (!res.ok) {
       throw new Error(data.message || "Registration failed");
+    } else {
+        alertDiv.innerHTML = `<div class="alert success">${data.message}</div>`;
+        window.location.href = "index.html";
     }
 
-    alertDiv.innerHTML = `<div class="alert success">${data.message}</div>`;
   } catch (err) {
     alertDiv.innerHTML = `<div class="alert error">${err.message}</div>`;
   }

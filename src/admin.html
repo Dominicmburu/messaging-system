@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>User Management | Company Portal</title>
+    <link rel="stylesheet" href="./css/admin.css" />
+  </head>
+  <body>
+    <nav>
+      <a href="employees.html">Employees</a>
+      <a href="messages.html">Messages</a>
+      <a href="#" id="adminLink" style="display: none;">User Management</a>
+      <a href="#" id="logout">Logout</a>
+    </nav>
+
+    <div class="container">
+      <h1>User Management</h1>
+      <div id="alert"></div>
+
+      <h2>Create User</h2>
+      <form id="createUserForm">
+        <input type="text" id="userEmail" placeholder="Email" required />
+        <input type="password" id="userPassword" placeholder="Password" required />
+        <select id="userRole" required>
+          <option value="Employee">Employee</option>
+          <option value="Manager">Manager</option>
+          <option value="Admin">Admin</option>
+        </select>
+        <button type="submit">Create User</button>
+      </form>
+
+      <h2>All Users</h2>
+      <div id="usersList"></div>
+    </div>
+
+    <div id="messageModal" class="modal">
+      <div class="modal-content">
+        <p id="modalMessage"></p>
+        <button id="closeModal">Close</button>
+      </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div id="confirmModal" class="modal">
+      <div class="modal-content">
+        <p id="confirmMessage"></p>
+        <button id="confirmYes">Yes</button>
+        <button id="confirmNo">No</button>
+      </div>
+    </div>
+
+    <!-- Update Modal -->
+    <div id="updateModal" class="modal">
+      <div class="modal-content">
+        <h3>Update User</h3>
+        <input type="text" id="updateUserEmail" placeholder="New Email" required />
+        <input type="password" id="updateUserPassword" placeholder="New Password" />
+        <select id="updateUserRole" required>
+          <option value="Employee">Employee</option>
+          <option value="Manager">Manager</option>
+          <option value="Admin">Admin</option>
+        </select>
+        <button id="updateConfirm">Update</button>
+        <button id="updateCancel">Cancel</button>
+      </div>
+    </div>
+
+    <script src="./js/main.js"></script> 
+    <script src="./js/admin.js"></script> 
+
+
+  </body>
+
+  <script>
+    const r = localStorage.getItem("userRole");
+    
+    const adminLink = document.getElementById("adminLink");
+    if (r === "Admin") {
+      adminLink.href = "admin.html";
+      adminLink.style.display = "inline-block";
+    }
+  </script>
+</html>
