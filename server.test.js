@@ -9,25 +9,27 @@ beforeEach(() => {
 describe("Server Routes", () => {
   describe("POST /api/register", () => {
     it("should register a new user", async () => {
+
       const newUser = {
-        email: "test@example.com",
-        password: "12345",
+        email: "dominicmburu034@gmail.com",
+        password: "123456",
         role: "employee",
       };
 
       const res = await request(app).post("/api/register").send(newUser);
-      expect(res.statusCode).toBe(201);
+      expect(res.statusCode).toBe(201); 
       expect(res.body).toHaveProperty(
         "message",
         "User registered. Check your email to verify."
       );
+
       expect(users.length).toBe(1); 
-      expect(users[0].email).toBe("test@example.com");
+      expect(users[0].email).toBe("dominicmburu034@gmail.com");
     });
 
     it("should not register a user with existing email", async () => {
       users.push({
-        email: "test@example.com",
+        email: "dominicmburu034@gmail.com",
         password: "abc",
         role: "employee",
         verified: false,
@@ -35,7 +37,7 @@ describe("Server Routes", () => {
       });
 
       const res = await request(app).post("/api/register").send({
-        email: "test@example.com",
+        email: "dominicmburu034@gmail.com",
         password: "newpass",
         role: "employee",
       });
@@ -47,7 +49,7 @@ describe("Server Routes", () => {
   describe("POST /api/login", () => {
     it("should login a verified user", async () => {
       users.push({
-        email: "verified@example.com",
+        email: "dominicmburu034@gmail.com",
         password: "123",
         role: "employee",
         verified: true,     
@@ -56,16 +58,16 @@ describe("Server Routes", () => {
 
       const res = await request(app)
         .post("/api/login")
-        .send({ email: "verified@example.com", password: "123" });
+        .send({ email: "dominicmburu034@gmail.com", password: "123" });
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty("message", "Login successful");
-      expect(res.body).toHaveProperty("email", "verified@example.com");
+      expect(res.body).toHaveProperty("email", "dominicmburu034@gmail.com");
       expect(res.body).toHaveProperty("role", "employee");
     });
 
     it("should fail to login if user is not verified", async () => {
       users.push({
-        email: "unverified@example.com",
+        email: "dominicmburu034@gmail.com",
         password: "123",
         role: "employee",
         verified: false, 
@@ -73,7 +75,7 @@ describe("Server Routes", () => {
       });
       const res = await request(app)
         .post("/api/login")
-        .send({ email: "unverified@example.com", password: "123" });
+        .send({ email: "dominicmburu034@gmail.com", password: "123" });
       expect(res.statusCode).toBe(401);
       expect(res.body).toHaveProperty(
         "message",
@@ -171,7 +173,7 @@ describe("Server Routes", () => {
   describe("POST /api/forgot-password", () => {
     it("should send a reset email if the user exists", async () => {
       users.push({
-        email: "forgot@example.com",
+        email: "dominicmburu034@gmail.com",
         password: "abc123",
         role: "employee",
         verified: true,
@@ -180,12 +182,12 @@ describe("Server Routes", () => {
   
       const res = await request(app)
         .post("/api/forgot-password")
-        .send({ email: "forgot@example.com" });
+        .send({ email: "dominicmburu034@gmail.com" });
   
       expect(res.statusCode).toBe(200);
       expect(res.body).toEqual({ message: "Password reset email sent" });
       
-      const user = users.find(u => u.email === "forgot@example.com");
+      const user = users.find(u => u.email === "dominicmburu034@gmail.com");
       expect(user.resetToken).toBeDefined();
       expect(user.resetToken).not.toBeNull();
     });
@@ -193,7 +195,7 @@ describe("Server Routes", () => {
     it("should return 404 if the email does not exist", async () => {
       const res = await request(app)
         .post("/api/forgot-password")
-        .send({ email: "doesnotexist@example.com" });
+        .send({ email: "dominicmburu034@gmail.com" });
   
       expect(res.statusCode).toBe(404);
       expect(res.body).toEqual({ message: "No user with that email" });
@@ -203,7 +205,7 @@ describe("Server Routes", () => {
   describe("POST /api/reset-password", () => {
     it("should reset the password if token is valid", async () => {
       users.push({
-        email: "reset@example.com",
+        email: "dominicmburu034@gmail.com",
         password: "oldpassword",
         role: "employee",
         verified: true,
@@ -213,7 +215,7 @@ describe("Server Routes", () => {
       const res = await request(app)
         .post("/api/reset-password")
         .send({
-          email: "reset@example.com",
+          email: "dominicmburu034@gmail.com",
           token: "myresettoken",
           newPassword: "newpassword123",
         });
@@ -221,14 +223,14 @@ describe("Server Routes", () => {
       expect(res.statusCode).toBe(200);
       expect(res.body).toEqual({ message: "Password has been reset" });
   
-      const user = users.find(u => u.email === "reset@example.com");
+      const user = users.find(u => u.email === "dominicmburu034@gmail.com");
       expect(user.password).toBe("newpassword123");
       expect(user.resetToken).toBeNull();
     });
   
     it("should return 400 for invalid token", async () => {
       users.push({
-        email: "reset@example.com",
+        email: "dominicmburu034@gmail.com",
         password: "oldpassword",
         role: "employee",
         verified: true,
@@ -238,7 +240,7 @@ describe("Server Routes", () => {
       const res = await request(app)
         .post("/api/reset-password")
         .send({
-          email: "reset@example.com",
+          email: "dominicmburu034@gmail.com",
           token: "wrongtoken",
           newPassword: "newpassword123",
         });
@@ -246,7 +248,7 @@ describe("Server Routes", () => {
       expect(res.statusCode).toBe(400);
       expect(res.body).toEqual({ message: "Invalid reset token" });
       
-      const user = users.find(u => u.email === "reset@example.com");
+      const user = users.find(u => u.email === "dominicmburu034@gmail.com");
       expect(user.password).toBe("oldpassword");
     });
   });

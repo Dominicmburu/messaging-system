@@ -11,6 +11,18 @@ app.use(express.json());
 
 let users = []; 
 
+const dbPath = path.join(__dirname, 'db.json');
+
+async function readDB() {
+  const data = await fs.readFile(dbPath, 'utf-8');
+  return JSON.parse(data);
+}
+
+async function readDB() {
+  const data = await fs.readFile(dbPath, 'utf-8');
+  return JSON.parse(data);
+}
+
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
@@ -55,8 +67,9 @@ async function sendResetEmail(email, token) {
 app.post('/api/register', async (req, res) => {
   try {
     const { email, password, role } = req.body;
+    const db = await readDB();
 
-    const existingUser = users.find(u => u.email === email);
+    const existingUser = db.users.find(u => u.email === email);
     if (existingUser) {
       return res.status(400).json({ message: 'Email already in use' });
     }
@@ -71,6 +84,37 @@ app.post('/api/register', async (req, res) => {
       verifyToken,
     });
 
+    db.users.push(newUser);
+
+    if (role === 'Employee') {
+      db.employees.push({
+        id: db.employees.length + 1,
+        email,
+        name: '',
+        department: '',
+        position: '',
+        salary: '',
+      });
+    } 
+    else if (role === 'Manager') {
+      db.managers.push({
+        id: db.managers.length + 1,
+        email,
+        name: '',
+        department: '',
+        position: '',
+        salary: '',
+      });
+    } 
+    else if (role === 'Admin') {
+      db.admins.push({
+        id: db.admins.length + 1,
+        email,
+      });
+    }
+
+    await writeDB(db);
+
     await sendVerificationEmail(email, verifyToken);
 
     return res.status(201).json({ message: 'User registered. Check your email to verify.' });
@@ -80,16 +124,22 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-app.get('/api/verify', (req, res) => {
+app.get('/api/verify', async (req, res) => {
   const { token, email } = req.query;
+  const db = await readDB();
 
-  const user = users.find(u => u.email === email && u.verifyToken === token);
+  const user = db.users.find(u => u.email === email && u.verifyToken === token);
+  
   if (!user) {
     return res.status(400).send('Invalid verification link');
   }
 
   user.verified = true;
   user.verifyToken = null;
+
+  await writeDB(db);
+
+
 
   return res.send('Email verified! You can now log in.');
 });

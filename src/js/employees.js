@@ -3,10 +3,60 @@ const createForm = document.getElementById("createForm");
 const employeesList = document.getElementById("employeesList");
 const logoutLink = document.getElementById("logout");
 
+const messageModal = document.getElementById("messageModal");
+const modalMessage = document.getElementById("modalMessage");
+const closeModal = document.getElementById("closeModal");
+
+const confirmModal = document.getElementById("confirmModal");
+const confirmMessage = document.getElementById("confirmMessage");
+const confirmYes = document.getElementById("confirmYes");
+const confirmNo = document.getElementById("confirmNo");
+
+const updateModal = document.getElementById("updateModal");
+const updateNameInput = document.getElementById("updateName");
+const updateConfirm = document.getElementById("updateConfirm");
+const updateCancel = document.getElementById("updateCancel");
+
+let updateEmployeeId = null; 
+
+function showUpdateModal(id, currentName) {
+  updateEmployeeId = id;
+  updateNameInput.value = currentName;
+  updateModal.style.display = "flex";
+}
+
+function showMessage(message) {
+  modalMessage.textContent = message;
+  messageModal.style.display = "flex";
+}
+
+closeModal.addEventListener("click", () => {
+  messageModal.style.display = "none";
+});
+
+function showConfirm(message) {
+  return new Promise((resolve) => {
+    confirmMessage.textContent = message;
+    confirmModal.style.display = "flex";
+
+    confirmYes.onclick = () => {
+      confirmModal.style.display = "none";
+      resolve(true);
+    };
+
+    confirmNo.onclick = () => {
+      confirmModal.style.display = "none";
+      resolve(false);
+    };
+  });
+}
+
 const role = localStorage.getItem("userRole");
 if (role !== "Admin" && role !== "Manager") {
-  alert("Access denied!");
-  window.location.href = "index.html";
+  showMessage("Access denied!");
+  setTimeout(() => {
+    window.location.href = "index.html";
+  }, 2000);
 }
 
 logoutLink.addEventListener("click", () => {
@@ -35,10 +85,10 @@ createForm.addEventListener("submit", async (e) => {
     if (!res.ok) {
       throw new Error(data.message || "Failed to create employee");
     }
-    alertDiv.innerHTML = `<div class="alert success">Employee Created with ID: ${data.id}</div>`;
+    showMessage(`Employee Created with ID: ${data.id}`);
     loadEmployees();
   } catch (err) {
-    alertDiv.innerHTML = `<div class="alert error">${err.message}</div>`;
+    showMessage(err.message);
   }
 });
 
@@ -60,8 +110,7 @@ async function loadEmployees() {
             <p><strong>Name:</strong> ${emp.name} </p>
             <p><strong>Username:</strong> ${emp.username} </p>
             <p><strong>Email:</strong> ${emp.email} </p>
-            <!-- The fields from JSONPlaceholder vary; we’re just showing some. -->
-            <button data-id="${emp.id}" class="updateBtn">Update</button>
+            <button data-id="${emp.id}" data-name="${emp.name}" class="updateBtn">Update</button>
             <button data-id="${emp.id}" class="deleteBtn">Delete</button>
           `;
 
@@ -71,42 +120,55 @@ async function loadEmployees() {
     document.querySelectorAll(".updateBtn").forEach((btn) => {
       btn.addEventListener("click", () => {
         const id = btn.dataset.id;
-        const newName = prompt("Enter new name:");
-        if (newName) updateEmployee(id, { name: newName });
+        const currentName = btn.dataset.name;
+        showUpdateModal(id, currentName);
       });
     });
 
     document.querySelectorAll(".deleteBtn").forEach((btn) => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", async () => {
         const id = btn.dataset.id;
-        if (confirm("Are you sure you want to delete this employee?")) {
+        const confirmed = await showConfirm("Are you sure you want to delete this employee?");
+        if (confirmed) {
           deleteEmployee(id);
         }
       });
     });
   } catch (err) {
-    employeesList.innerHTML = `<div class="alert error">Failed to load employees</div>`;
+    showMessage("Failed to load employees");
   }
 }
 
-async function updateEmployee(id, updatedData) {
+updateConfirm.addEventListener("click", async () => {
+  const newName = updateNameInput.value.trim();
+  if (!newName) {
+    showMessage("Name cannot be empty!");
+    return;
+  }
+
   try {
-    const res = await fetch(`${BASE_URL}/api/employees/${id}`, {
+    const res = await fetch(`${BASE_URL}/api/employees/${updateEmployeeId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedData),
+      body: JSON.stringify({ name: newName }),
     });
     const data = await res.json();
 
     if (!res.ok) {
       throw new Error(data.message || "Failed to update employee");
     }
-    alertDiv.innerHTML = `<div class="alert success">Employee Updated</div>`;
+
+    showMessage("Employee Updated");
+    updateModal.style.display = "none";
     loadEmployees();
   } catch (err) {
-    alertDiv.innerHTML = `<div class="alert error">${err.message}</div>`;
+    showMessage(err.message);
   }
-}
+});
+
+updateCancel.addEventListener("click", () => {
+  updateModal.style.display = "none";
+});
 
 async function deleteEmployee(id) {
   try {
@@ -116,10 +178,10 @@ async function deleteEmployee(id) {
     if (!res.ok) {
       throw new Error("Failed to delete employee");
     }
-    alertDiv.innerHTML = `<div class="alert success">Employee Deleted</div>`;
+    showMessage("Employee Deleted");
     loadEmployees();
   } catch (err) {
-    alertDiv.innerHTML = `<div class="alert error">${err.message}</div>`;
+    showMessage(err.message);
   }
 }
 
