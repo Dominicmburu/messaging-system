@@ -108,7 +108,9 @@ async function loadEmployees() {
       empDiv.innerHTML = `
             <p><strong>ID:</strong> ${emp.id} </p>
             <p><strong>Name:</strong> ${emp.name} </p>
-            <p><strong>Username:</strong> ${emp.username} </p>
+            <p><strong>Department:</strong> ${emp.department} </p>
+            <p><strong>Position:</strong> ${emp.position} </p>
+            <p><strong>Salary:</strong> ${emp.salary} </p>
             <p><strong>Email:</strong> ${emp.email} </p>
             <button data-id="${emp.id}" data-name="${emp.name}" class="updateBtn">Update</button>
             <button data-id="${emp.id}" class="deleteBtn">Delete</button>

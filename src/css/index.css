@@ -1,0 +1,182 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #0d012e;
+  color: #333;
+}
+
+nav {
+  background-color: #052547;
+  padding: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  margin-right: 15px;
+  font-weight: bold;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+.container {
+  width: 400px;
+  margin: 60px auto;
+  background-color: #25045a;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  color: white;
+}
+
+.container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#alert {
+  margin-bottom: 10px;
+  text-align: center;
+  min-height: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+form input[type="email"],
+form input[type="password"] {
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
+button[type="submit"] {
+  padding: 10px;
+  background-color: #2d3e50;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+button[type="submit"]:hover {
+  background-color: #1b2733;
+}
+
+p a#forgotLink {
+  color: #007bff;
+  text-decoration: none;
+}
+
+p a#forgotLink:hover {
+  text-decoration: underline;
+}
+
+.modal {
+  display: none; 
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #21154e;
+  margin: 15% auto; 
+  padding: 20px;
+  color: white;
+  border-radius: 6px;
+  width: 300px;
+  position: relative;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2 {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.modal-content p {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.modal-content input[type="email"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
+.modal-content button {
+  width: 100%;
+  padding: 10px;
+  background-color: #2d3e50;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.modal-content button:hover {
+  background-color: #1b2733;
+}
+
+.close {
+  color: #999;
+  float: right;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: #666;
+  text-decoration: none;
+}
+
+.alert {
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.alert.success {
+  background-color: #e0ffe0;
+  color: #2d7a2d;
+}
+
+.alert.error {
+  background-color: #ffe0e0;
+  color: #7a2d2d;
+}

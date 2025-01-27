@@ -3,6 +3,7 @@ const alertDiv = document.getElementById("alert");
 const messagesContainer = document.getElementById("messagesContainer");
 const messageForm = document.getElementById("messageForm");
 const userEmail = localStorage.getItem("userEmail");
+const toEmployee = document.getElementById("toEmployee");
 
 if (!userEmail) {
   alert("Please log in first");
@@ -13,6 +14,30 @@ logoutLink.addEventListener("click", () => {
   localStorage.clear();
   window.location.href = "index.html";
 });
+
+async function loadEmployeesForMessaging() {
+  try {
+    const dbPath = "../../db.json"; 
+    const res = await fetch(dbPath);
+    const db = await res.json();
+
+    const employees = db.employees || [];
+    console.log(employees);
+    
+    toEmployee.innerHTML = `<option value="" disabled selected>Select an employee</option>`;
+    employees
+      .filter((employee) => employee.email !== userEmail) 
+      .forEach((employee) => {
+        const option = document.createElement("option");
+        option.value = employee.email;
+        option.textContent = employee.email; 
+        toEmployee.appendChild(option);
+      });
+    
+  } catch (err) {
+    alertDiv.innerHTML = `<div class="alert error">Failed to load employees</div>`;
+  }
+}
 
 async function loadMessages() {
   try {
@@ -40,8 +65,13 @@ async function loadMessages() {
 
 messageForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const to = document.getElementById("toEmail").value;
+  const to = toEmployee.value;
   const messageBody = document.getElementById("msgBody").value;
+
+  if (!to) {
+    alertDiv.innerHTML = `<div class="alert error">Please select a recipient</div>`;
+    return;
+  }
 
   try {
     const res = await fetch(`${BASE_URL}/api/messages`, {
@@ -58,13 +88,16 @@ messageForm.addEventListener("submit", async (e) => {
       throw new Error(data.message || "Failed to send message");
     }
     alertDiv.innerHTML = `<div class="alert success">Message sent</div>`;
-    document.getElementById("toEmail").value = "";
+
+    toEmployee.selectedIndex = 0; 
     document.getElementById("msgBody").value = "";
+
     loadMessages();
   } catch (err) {
     alertDiv.innerHTML = `<div class="alert error">${err.message}</div>`;
   }
 });
 
+loadEmployeesForMessaging();
 loadMessages();
-setInterval(loadMessages, 5000);
+setInterval(loadMessages, 5000); 

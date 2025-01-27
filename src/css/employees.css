@@ -1,0 +1,224 @@
+/* employees.css */
+
+/* RESET / BASE STYLES */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+/* NAVIGATION BAR */
+nav {
+  background-color: #2d3e50;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  margin-right: 15px;
+  font-weight: bold;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+/* CONTAINER */
+.container {
+  width: 600px; /* adjust as needed */
+  margin: 30px auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.container h1 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* ALERT MESSAGE AREA */
+#alert {
+  margin-bottom: 15px;
+  text-align: center;
+  min-height: 20px;
+}
+
+/* CREATE FORM */
+#createForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+#createForm input[type="text"] {
+  flex: 1 1 calc(50% - 10px);
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+#createForm button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  background-color: #2d3e50;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 5px;
+  transition: background-color 0.2s ease;
+}
+
+#createForm button[type="submit"]:hover {
+  background-color: #1b2733;
+}
+
+/* EMPLOYEES LIST */
+#employeesList {
+  margin-top: 10px;
+}
+
+/* For each employee card (optional approach) */
+#employeesList div.employee-card {
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 10px;
+  margin: 10px 0;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.employee-card p {
+  margin: 0;
+}
+
+.employee-card button {
+  margin-right: 10px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.employee-card .updateBtn {
+  background-color: #4caf50;
+  color: #fff;
+}
+.employee-card .updateBtn:hover {
+  background-color: #388e3c;
+}
+
+.employee-card .deleteBtn {
+  background-color: #e91e63;
+  color: #fff;
+}
+.employee-card .deleteBtn:hover {
+  background-color: #c2185b;
+}
+
+/* HEADERS */
+h2 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* MODAL STYLES */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent backdrop */
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: auto;
+  padding: 20px;
+  border-radius: 6px;
+  width: 300px;
+  max-width: 90%; /* For smaller screens */
+  position: relative;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+/* Buttons inside modal */
+.modal-content button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
+  margin: 5px;
+  background-color: #2d3e50;
+  color: #fff;
+  transition: background-color 0.2s ease;
+}
+
+.modal-content button:hover {
+  background-color: #1b2733;
+}
+
+/* HEADERS IN MODAL */
+.modal-content h3 {
+  margin-bottom: 10px;
+}
+
+/* INPUTS IN MODAL */
+.modal-content input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
+/* ALERT or CONFIRM MESSAGES INSIDE MODAL */
+.modal-content p {
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+/* EXAMPLES OF ALERT BOX STYLES (OPTIONAL) */
+.alert {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.alert.success {
+  background-color: #e0ffe0;
+  color: #2d7a2d;
+}
+
+.alert.error {
+  background-color: #ffe0e0;
+  color: #7a2d2d;
+}

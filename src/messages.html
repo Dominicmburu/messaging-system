@@ -5,26 +5,26 @@
   <link rel="stylesheet" href="./css/styles.css" />
 </head>
 <body>
-  <nav>
-    <a href="messages.html">Messages</a>
+  <nav class="chat-nav">
+    <div class="chat-nav-title">Messages</div>
     <a href="#" id="logout">Logout</a>
   </nav>
 
-  <div class="container">
-    <h1>Messaging</h1>
-    <div id="alert"></div>
+  <div class="chat-container">
+    <div id="alert" class="chat-alert"></div>
 
-    <div id="messagesContainer" style="max-height: 300px; overflow-y: auto; border: 1px solid #ccc;">
+    <div id="messagesContainer" class="chat-messages">
     </div>
 
-    <form id="messageForm">
-      <h2>Send Message</h2>
-      <label for="toEmail">To</label>
-      <input type="text" id="toEmail" required />
-      <label for="msgBody">Message</label>
-      <input type="text" id="msgBody" required />
-      <button type="submit">Send</button>
-    </form>
+    <div class="chat-input-area">
+      <select id="toEmployee" required>
+        <option value="" disabled selected>Select an employee</option>
+      </select>
+      <input type="text" id="msgBody" placeholder="Type a message..." required />
+      <button id="sendBtn" form="messageForm">Send</button>
+    </div>
+    
+    <form id="messageForm" style="display: none;"></form>
   </div>
 
   <script src="./js/main.js"></script>
