@@ -1,186 +1,143 @@
-import { JSDOM } from 'jsdom';
-import fetchMock from 'jest-fetch-mock';
+import { fireEvent, getByText, getByLabelText } from "@testing-library/dom";
+import "@testing-library/jest-dom";
 
-// Mock BASE_URL
-const BASE_URL = 'https://example.com';
-
-// Function to create a mock DOM environment
-function createMockDOM() {
-  const dom = new JSDOM(`<!DOCTYPE html><html><body>
-    <a id="logout"></a>
-    <div id="alert"></div>
-    <div id="messagesContainer"></div>
-    <form id="messageForm">
-      <input id="toEmail" type="email">
-      <textarea id="msgBody"></textarea>
-      <button type="submit">Send</button>
-    </form>
-  </body></html>`);
-  return dom;
-}
-
-describe('Logout functionality', () => {
-  it('should clear local storage and redirect on logout', () => {
-    const dom = createMockDOM();
-    globalThis.document = dom.window.document;
-    globalThis.window = dom.window;
-    globalThis.localStorage = dom.window.localStorage;
-
-    localStorage.setItem('userEmail', 'test@example.com');
-    const logoutLink = document.getElementById('logout');
-    const spy = jest.spyOn(window, 'location', 'get').mockImplementation(() => ({
-      href: '',
-      assign: jest.fn(),
-    }));
-
-    logoutLink.dispatchEvent(new dom.window.Event('click'));
-
-    expect(localStorage.getItem('userEmail')).toBeNull();
-    expect(spy().assign).toHaveBeenCalledTimes(1);
-    expect(spy().assign).toHaveBeenCalledWith('index.html');
+// Mock localStorage
+beforeEach(() => {
+  Object.defineProperty(window, "localStorage", {
+    value: {
+      getItem: jest.fn(),
+      setItem: jest.fn(),
+      clear: jest.fn(),
+    },
+    writable: true,
   });
 });
 
-describe('loadMessages function', () => {
-  beforeEach(() => {
-    fetchMock.enableMocks();
-  });
-
-  afterEach(() => {
-    fetchMock.disableMocks();
-  });
-
-  it('should fetch messages and render them', async () => {
-    const dom = createMockDOM();
-    globalThis.document = dom.window.document;
-    globalThis.window = dom.window;
-    globalThis.localStorage = dom.window.localStorage;
-
-    localStorage.setItem('userEmail', 'test@example.com');
-    const messagesContainer = document.getElementById('messagesContainer');
-
-    fetchMock.mockResponseOnce(JSON.stringify([
-      { from: 'test1@example.com', to: 'test2@example.com', message: 'Hello', timestamp: Date.now() },
-      { from: 'test2@example.com', to: 'test1@example.com', message: 'Hi', timestamp: Date.now() },
-    ]));
-
-    await loadMessages();
-
-    expect(messagesContainer.children.length).toBe(2);
-  });
-
-  it('should handle error when fetching messages', async () => {
-    const dom = createMockDOM();
-    globalThis.document = dom.window.document;
-    globalThis.window = dom.window;
-    globalThis.localStorage = dom.window.localStorage;
-
-    localStorage.setItem('userEmail', 'test@example.com');
-    const messagesContainer = document.getElementById('messagesContainer');
-
-    fetchMock.mockRejectOnce(new Error('Mocked error'));
-
-    await loadMessages();
-
-    expect(messagesContainer.innerHTML).toContain('Error loading messages');
-  });
+// Mock fetch
+beforeEach(() => {
+  global.fetch = jest.fn();
 });
 
-describe('messageForm submission', () => {
-  beforeEach(() => {
-    fetchMock.enableMocks();
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
+describe("Message App", () => {
+  document.body.innerHTML = `
+    <div>
+      <a id="logout">Logout</a>
+      <div id="alert"></div>
+      <div id="messagesContainer"></div>
+      <form id="messageForm">
+        <input id="toEmail" />
+        <textarea id="msgBody"></textarea>
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  `;
+
+  const logoutLink = document.getElementById("logout");
+  const alertDiv = document.getElementById("alert");
+  const messagesContainer = document.getElementById("messagesContainer");
+  const messageForm = document.getElementById("messageForm");
+
+  test("redirects to login if userEmail is not set", () => {
+    window.localStorage.getItem.mockReturnValue(null);
+    const spy = jest.spyOn(window.location, "href", "set");
+    require("./yourCode.js"); 
+    expect(spy).toHaveBeenCalledWith("index.html");
   });
 
-  afterEach(() => {
-    fetchMock.disableMocks();
+  test("clears localStorage and redirects on logout", () => {
+    const spy = jest.spyOn(window.location, "href", "set");
+    fireEvent.click(logoutLink);
+    expect(window.localStorage.clear).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledWith("index.html");
   });
 
-  it('should send a message and clear form fields', async () => {
-    const dom = createMockDOM();
-    globalThis.document = dom.window.document;
-    globalThis.window = dom.window;
-    globalThis.localStorage = dom.window.localStorage;
+  test("loads messages successfully", async () => {
+    window.localStorage.getItem.mockReturnValue("test@example.com");
 
-    localStorage.setItem('userEmail', 'test@example.com');
-    const toEmailInput = document.getElementById('toEmail');
-    const msgBodyInput = document.getElementById('msgBody');
-    const alertDiv = document.getElementById('alert');
+    const mockMessages = [
+      {
+        from: "user1@example.com",
+        to: "test@example.com",
+        message: "Hello",
+        timestamp: Date.now(),
+      },
+    ];
 
-    toEmailInput.value = 'recipient@example.com';
-    msgBodyInput.value = 'Hello, world!';
-    const form = document.getElementById('messageForm');
-
-    fetchMock.mockResponseOnce(JSON.stringify({ message: 'Message sent successfully' }));
-
-    await new Promise(resolve => {
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await messageFormSubmissionHandler(e);
-        resolve();
-      });
-      form.dispatchEvent(new dom.window.Event('submit'));
+    global.fetch.mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue(mockMessages),
     });
 
-    expect(toEmailInput.value).toBe('');
-    expect(msgBodyInput.value).toBe('');
-    expect(alertDiv.innerHTML).toContain('Message sent');
+    require("./yourCode.js");
+
+    await new Promise(setImmediate); 
+    expect(messagesContainer.children.length).toBe(1);
+    expect(messagesContainer).toHaveTextContent("From: user1@example.com");
   });
 
-  it('should handle error when sending a message', async () => {
-    const dom = createMockDOM();
-    globalThis.document = dom.window.document;
-    globalThis.window = dom.window;
-    globalThis.localStorage = dom.window.localStorage;
+  test("handles message loading error", async () => {
+    window.localStorage.getItem.mockReturnValue("test@example.com");
 
-    localStorage.setItem('userEmail', 'test@example.com');
-    const toEmailInput = document.getElementById('toEmail');
-    const msgBodyInput = document.getElementById('msgBody');
-    const alertDiv = document.getElementById('alert');
+    global.fetch.mockRejectedValue(new Error("Failed to fetch"));
 
-    toEmailInput.value = 'recipient@example.com';
-    msgBodyInput.value = 'Hello, world!';
-    const form = document.getElementById('messageForm');
+    require("./yourCode.js");
 
-    fetchMock.mockRejectOnce(new Error('Mocked error'));
+    await new Promise(setImmediate); // Wait for async code to resolve
 
-    await new Promise(resolve => {
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await messageFormSubmissionHandler(e);
-        resolve();
-      });
-      form.dispatchEvent(new dom.window.Event('submit'));
+    expect(messagesContainer).toHaveTextContent("Error loading messages");
+  });
+
+  test("sends a message successfully", async () => {
+    window.localStorage.getItem.mockReturnValue("test@example.com");
+
+    global.fetch.mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({}),
     });
 
-    expect(alertDiv.innerHTML).toContain('Mocked error');
-  });
-});
+    const toInput = document.getElementById("toEmail");
+    const messageInput = document.getElementById("msgBody");
 
-// Helper function to mimic the message form submission handler
-async function messageFormSubmissionHandler(e) {
-  e.preventDefault();
-  const to = document.getElementById('toEmail').value;
-  const messageBody = document.getElementById('msgBody').value;
+    toInput.value = "recipient@example.com";
+    messageInput.value = "Hello!";
 
-  try {
-    const res = await fetch(`${BASE_URL}/api/messages`, {
+    fireEvent.submit(messageForm);
+
+    await new Promise(setImmediate); 
+
+    expect(global.fetch).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        from: localStorage.getItem('userEmail'),
-        to,
-        message: messageBody,
+        from: "test@example.com",
+        to: "recipient@example.com",
+        message: "Hello!",
       }),
+    }));
+    expect(alertDiv).toHaveTextContent("Message sent");
+  });
+
+  test("handles message sending error", async () => {
+    window.localStorage.getItem.mockReturnValue("test@example.com");
+
+    global.fetch.mockResolvedValue({
+      ok: false,
+      json: jest.fn().mockResolvedValue({ message: "Failed to send message" }),
     });
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.message || "Failed to send message");
-    }
-    document.getElementById('alert').innerHTML = `<div class="alert success">Message sent</div>`;
-    document.getElementById('toEmail').value = "";
-    document.getElementById('msgBody').value = "";
-    loadMessages();
-  } catch (err) {
-    document.getElementById('alert').innerHTML = `<div class="alert error">${err.message}</div>`;
-  }
-}
+
+    const toInput = document.getElementById("toEmail");
+    const messageInput = document.getElementById("msgBody");
+
+    toInput.value = "recipient@example.com";
+    messageInput.value = "Hello!";
+
+    fireEvent.submit(messageForm);
+
+    await new Promise(setImmediate); 
+
+    expect(alertDiv).toHaveTextContent("Failed to send message");
+  });
+});
