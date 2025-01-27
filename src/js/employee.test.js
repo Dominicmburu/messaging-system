@@ -1,86 +1,194 @@
-import { JSDOM } from 'jsdom';
-import { createForm, loadEmployees, updateEmployee, deleteEmployee } from './yourScript'; // Import your functions
 
-const BASE_URL = "http://localhost:5000";
 
-const dom = new JSDOM(`<!DOCTYPE html><html><body>
-  <div id="alert"></div>
-  <form id="createForm">
-    <input id="name" type="text">
-    <input id="department" type="text">
-    <input id="position" type="text">
-    <input id="salary" type="text">
-  </form>
-  <div id="employeesList"></div>
-  <a id="logout">Logout</a>
-</body></html>`);
+const BASE_URL = "http://localhost:5000"; 
 
-// Set up the global document and window objects
-globalThis.document = dom.window.document;
-globalThis.window = dom.window;
 
-// Mock localStorage
-globalThis.localStorage = {
-  getItem: jest.fn(() => 'Admin'), // Mock user role
-  clear: jest.fn(),
-};
+describe("employee.js", () => {
+  let alertDiv;
+  let createForm;
+  let employeesList;
+  let logoutLink;
 
-// Mock fetch
-globalThis.fetch = jest.fn(() => Promise.resolve({
-  ok: true,
-  json: () => Promise.resolve({ id: 1, name: 'John Doe', username: 'johndoe', email: 'johndoe@example.com' }),
-}));
+  let originalFetch;
+  let originalLocalStorage;
 
-describe('Employee Manager Tests', () => {
-  beforeEach(() => {
-    // Reset mocks before each test
-    jest.clearAllMocks();
-  });
+  beforeAll(() => {
+    originalFetch = global.fetch;
+    originalLocalStorage = global.localStorage;
 
-  it('should load employees', async () => {
-    await loadEmployees();
-    expect(document.getElementById('employeesList').innerHTML).not.toContain('Loading...');
-  });
+    global.fetch = jest.fn();
 
-  it('should update an employee', async () => {
-    await updateEmployee(1, { name: 'Jane Doe' });
-    expect(fetch).toHaveBeenCalledTimes(1);
-    expect(fetch).toHaveBeenCalledWith(`${BASE_URL}/api/employees/1`, expect.objectContaining({
-      method: 'PUT',
-      headers: expect.objectContaining({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify({ name: 'Jane Doe' }),
-    }));
-  });
-
-  it('should delete an employee', async () => {
-    await deleteEmployee(1);
-    expect(fetch).toHaveBeenCalledTimes(1);
-    expect(fetch).toHaveBeenCalledWith(`${BASE_URL}/api/employees/1`, expect.objectContaining({
-      method: 'DELETE',
-    }));
-  });
-
-  it('should handle form submission', async () => {
-    document.getElementById('name').value = 'New Employee';
-    document.getElementById('department').value = 'Sales';
-    document.getElementById('position').value = 'Salesman';
-    document.getElementById('salary').value = '50000';
-
-    const submitEvent = new dom.window.Event('submit');
-    createForm.dispatchEvent(submitEvent);
-
-    await new Promise(resolve => setTimeout(resolve, 0)); // Allow async code to run
-
-    expect(fetch).toHaveBeenCalledTimes(1);
-    expect(fetch).toHaveBeenCalledWith(`${BASE_URL}/api/employees`, expect.objectContaining({
-      method: 'POST',
-      headers: expect.objectContaining({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify({
-        name: 'New Employee',
-        department: 'Sales',
-        position: 'Salesman',
-        salary: '50000',
+    const mockStorage = {};
+    global.localStorage = {
+      getItem: jest.fn((key) => mockStorage[key] || null),
+      setItem: jest.fn((key, value) => {
+        mockStorage[key] = value;
       }),
-    }));
+      removeItem: jest.fn((key) => {
+        delete mockStorage[key];
+      }),
+      clear: jest.fn(() => {
+        Object.keys(mockStorage).forEach((k) => delete mockStorage[k]);
+      }),
+    };
+  });
+
+  afterAll(() => {
+    global.fetch = originalFetch;
+    global.localStorage = originalLocalStorage;
+  });
+
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="alert"></div>
+      <form id="createForm">
+        <input type="text" id="name" />
+        <input type="text" id="department" />
+        <input type="text" id="position" />
+        <input type="text" id="salary" />
+        <button type="submit">Create</button>
+      </form>
+      <div id="employeesList"></div>
+      <a id="logout"></a>
+    `;
+
+    alertDiv = document.getElementById("alert");
+    createForm = document.getElementById("createForm");
+    employeesList = document.getElementById("employeesList");
+    logoutLink = document.getElementById("logout");
+
+    localStorage.setItem("userRole", "Admin");
+
+    jest.isolateModules(() => {
+      require("./employee.js"); 
+    });
+  });
+
+  afterEach(() => {
+    // Reset mocks
+    fetch.mockReset();
+    localStorage.clear();
+  });
+
+  test("should redirect if user is neither Admin nor Manager", () => {
+    localStorage.setItem("userRole", "Employee"); // not Admin/Manager
+
+    jest.isolateModules(() => {
+      require("./employee.js");
+    });
+
+    expect(window.location.href).toContain("index.html");
+  });
+
+  test("should call POST /api/employees on createForm submit (success)", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ id: 101 }),
+    });
+
+    document.getElementById("name").value = "Test Name";
+    document.getElementById("department").value = "Test Dept";
+    document.getElementById("position").value = "Test Pos";
+    document.getElementById("salary").value = "1000";
+
+    createForm.dispatchEvent(new Event("submit"));
+
+    await new Promise(setImmediate);
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/api/employees"),
+      expect.objectContaining({
+        method: "POST",
+      })
+    );
+
+    expect(alertDiv.innerHTML).toContain("Employee Created with ID: 101");
+  });
+
+  test("should show error if create employee fails", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ message: "Failed to create employee" }),
+    });
+
+    createForm.dispatchEvent(new Event("submit"));
+    await new Promise(setImmediate);
+
+    expect(alertDiv.innerHTML).toContain("Failed to create employee");
+  });
+
+  test("loadEmployees success scenario", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => [
+        { id: 1, name: "John", username: "john123", email: "john@example.com" },
+        { id: 2, name: "Jane", username: "jane123", email: "jane@example.com" },
+      ],
+    });
+
+    const { loadEmployees } = require("./employee.js");
+    await loadEmployees();
+
+    expect(employeesList.innerHTML).toContain("John");
+    expect(employeesList.innerHTML).toContain("jane123");
+
+    const updateBtns = document.querySelectorAll(".updateBtn");
+    const deleteBtns = document.querySelectorAll(".deleteBtn");
+
+    expect(updateBtns.length).toBe(2);
+    expect(deleteBtns.length).toBe(2);
+  });
+
+  test("loadEmployees fail scenario", async () => {
+    fetch.mockRejectedValueOnce(new Error("Network Error"));
+
+    const { loadEmployees } = require("./employee.js");
+    await loadEmployees();
+
+    expect(employeesList.innerHTML).toContain("Failed to load employees");
+  });
+
+  test("updateEmployee success scenario", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ id: 1, name: "Updated Employee" }),
+    });
+
+    const { updateEmployee } = require("./employee.js");
+    await updateEmployee(1, { name: "Updated Employee" });
+
+    expect(alertDiv.innerHTML).toContain("Employee Updated");
+    expect(fetch).toHaveBeenCalledTimes(2); 
+  });
+
+  test("updateEmployee error scenario", async () => {
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ message: "Failed to update employee" }),
+    });
+
+    const { updateEmployee } = require("./employee.js");
+    await updateEmployee(99, { name: "Bad Update" });
+
+    expect(alertDiv.innerHTML).toContain("Failed to update employee");
+  });
+
+  test("deleteEmployee success scenario", async () => {
+    fetch.mockResolvedValueOnce({ ok: true });
+
+    const { deleteEmployee } = require("./employee.js");
+    await deleteEmployee(2);
+
+    expect(alertDiv.innerHTML).toContain("Employee Deleted");
+    expect(fetch).toHaveBeenCalledTimes(2); 
+  });
+
+  test("deleteEmployee error scenario", async () => {
+    fetch.mockResolvedValueOnce({ ok: false });
+
+    const { deleteEmployee } = require("./employee.js");
+    await deleteEmployee(2);
+
+    expect(alertDiv.innerHTML).toContain("Failed to delete employee");
   });
 });
