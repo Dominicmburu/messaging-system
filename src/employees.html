@@ -8,6 +8,7 @@
     <nav>
       <a href="employees.html">Employees</a>
       <a href="messages.html">Messages</a>
+      <a href="#" id="adminLink" style="display: none;">User Management</a>
       <a href="#" id="logout">Logout</a>
     </nav>
 
@@ -18,6 +19,7 @@
       <h2>Create Employee</h2>
       <form id="createForm">
         <input type="text" id="name" placeholder="Name" required />
+        <input type="text" id="email" placeholder="Email" required />
         <input type="text" id="department" placeholder="Department" required />
         <input type="text" id="position" placeholder="Position" required />
         <input type="text" id="salary" placeholder="Salary" required />
@@ -47,6 +49,10 @@
       <div class="modal-content">
         <h3>Update Employee</h3>
         <input type="text" id="updateName" placeholder="New Name" required />
+        <input type="text" id="updateEmail" placeholder="New Email" required />
+        <input type="text" id="updateDepartment" placeholder="New Department" required />
+        <input type="text" id="updatePosition" placeholder="New Position" required />
+        <input type="text" id="updateSalary" placeholder="New Salary" required />
         <button id="updateConfirm">Update</button>
         <button id="updateCancel">Cancel</button>
       </div>
@@ -54,5 +60,16 @@
 
     <script src="./js/main.js"></script>
     <script src="./js/employees.js"></script>
+
+    <script>
+      const r = localStorage.getItem("userRole");
+      
+      const adminLink = document.getElementById("adminLink");
+      if (r === "Admin") {
+        adminLink.href = "admin.html";
+        adminLink.style.display = "inline-block";
+      }
+    </script>
+    
   </body>
 </html>

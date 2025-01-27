@@ -10,7 +10,7 @@
     {
       "email": "oliviamarjorie787@gmail.com",
       "password": "123456",
-      "role": "Employee",
+      "role": "Admin",
       "verified": true,
       "verifyToken": null
     },
@@ -26,10 +26,10 @@
     {
       "id": 1,
       "email": "mburudominic381@gmail.com",
-      "name": "",
-      "department": "",
-      "position": "",
-      "salary": ""
+      "name": "Mburu",
+      "department": "IT",
+      "position": "Manager",
+      "salary": "300000"
     },
     {
       "id": 2,
@@ -38,13 +38,6 @@
       "department": "",
       "position": "",
       "salary": ""
-    },
-    {
-      "id": 3,
-      "name": "Dominic",
-      "department": "IT",
-      "position": "Manager",
-      "salary": "300000"
     }
   ],
   "managers": [

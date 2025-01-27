@@ -174,12 +174,13 @@ app.get("/api/employees", async (req, res) => {
 
 app.post("/api/employees", async (req, res) => {
   try {
-    const { name, department, position, salary } = req.body;
+    const { name, email, department, position, salary } = req.body;
 
     const db = await readDB();
     const newEmployee = {
       id: db.employees.length + 1,
       name,
+      email,
       department,
       position,
       salary,
@@ -198,7 +199,7 @@ app.post("/api/employees", async (req, res) => {
 app.put("/api/employees/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, department, position, salary } = req.body;
+    const { name, email, department, position, salary } = req.body;
 
     const db = await readDB();
     const employee = db.employees.find((emp) => emp.id === parseInt(id));
@@ -207,6 +208,7 @@ app.put("/api/employees/:id", async (req, res) => {
     }
 
     employee.name = name || employee.name;
+    employee.email = email || employee.email;
     employee.department = department || employee.department;
     employee.position = position || employee.position;
     employee.salary = salary || employee.salary;

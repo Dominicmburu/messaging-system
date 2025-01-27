@@ -14,14 +14,21 @@ const confirmNo = document.getElementById("confirmNo");
 
 const updateModal = document.getElementById("updateModal");
 const updateNameInput = document.getElementById("updateName");
+const updateEmailInput = document.getElementById("updateEmail");
+const updateDepartmentInput = document.getElementById("updateDepartment");
+const updatePositionInput = document.getElementById("updatePosition");
+const updateSalaryInput = document.getElementById("updateSalary");
 const updateConfirm = document.getElementById("updateConfirm");
 const updateCancel = document.getElementById("updateCancel");
-
 let updateEmployeeId = null; 
 
-function showUpdateModal(id, currentName) {
+function showUpdateModal(id, currentName, currentEmail, currentDepartment, currentPosition, currentSalary) {
   updateEmployeeId = id;
   updateNameInput.value = currentName;
+  updateEmailInput.value = currentEmail || ""; 
+  updateDepartmentInput.value = currentDepartment || ""; 
+  updatePositionInput.value = currentPosition || ""; 
+  updateSalaryInput.value = currentSalary || ""; 
   updateModal.style.display = "flex";
 }
 
@@ -70,6 +77,7 @@ createForm.addEventListener("submit", async (e) => {
 
   const newEmployee = {
     name: document.getElementById("name").value,
+    email: document.getElementById("email").value, 
     department: document.getElementById("department").value,
     position: document.getElementById("position").value,
     salary: document.getElementById("salary").value,
@@ -106,15 +114,15 @@ async function loadEmployees() {
       empDiv.style.padding = "5px";
 
       empDiv.innerHTML = `
-            <p><strong>ID:</strong> ${emp.id} </p>
-            <p><strong>Name:</strong> ${emp.name} </p>
-            <p><strong>Department:</strong> ${emp.department} </p>
-            <p><strong>Position:</strong> ${emp.position} </p>
-            <p><strong>Salary:</strong> ${emp.salary} </p>
-            <p><strong>Email:</strong> ${emp.email} </p>
-            <button data-id="${emp.id}" data-name="${emp.name}" class="updateBtn">Update</button>
-            <button data-id="${emp.id}" class="deleteBtn">Delete</button>
-          `;
+        <p><strong>ID:</strong> ${emp.id} </p>
+        <p><strong>Name:</strong> ${emp.name} </p>
+        <p><strong>Department:</strong> ${emp.department} </p>
+        <p><strong>Position:</strong> ${emp.position} </p>
+        <p><strong>Salary:</strong> ${emp.salary} </p>
+        <p><strong>Email:</strong> ${emp.email} </p>
+        <button data-id="${emp.id}" data-name="${emp.name}" data-email="${emp.email}" data-department="${emp.department}" data-position="${emp.position}" data-salary="${emp.salary}" class="updateBtn">Update</button>
+        <button data-id="${emp.id}" class="deleteBtn">Delete</button>
+      `;
 
       employeesList.appendChild(empDiv);
     });
@@ -123,7 +131,12 @@ async function loadEmployees() {
       btn.addEventListener("click", () => {
         const id = btn.dataset.id;
         const currentName = btn.dataset.name;
-        showUpdateModal(id, currentName);
+        const currentEmail = btn.dataset.email;
+        const currentDepartment = btn.dataset.department;
+        const currentPosition = btn.dataset.position;
+        const currentSalary = btn.dataset.salary;
+
+        showUpdateModal(id, currentName, currentEmail, currentDepartment, currentPosition, currentSalary);
       });
     });
 
@@ -143,8 +156,13 @@ async function loadEmployees() {
 
 updateConfirm.addEventListener("click", async () => {
   const newName = updateNameInput.value.trim();
-  if (!newName) {
-    showMessage("Name cannot be empty!");
+  const newEmail = updateEmailInput.value.trim();
+  const newDepartment = updateDepartmentInput.value.trim();
+  const newPosition = updatePositionInput.value.trim();
+  const newSalary = updateSalaryInput.value.trim();
+
+  if (!newName || !newEmail || !newDepartment || !newPosition || !newSalary ) {
+    showMessage("Fill all the fields!");
     return;
   }
 
@@ -152,7 +170,13 @@ updateConfirm.addEventListener("click", async () => {
     const res = await fetch(`${BASE_URL}/api/employees/${updateEmployeeId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: newName }),
+      body: JSON.stringify({ 
+        name: newName,
+        email: newEmail,
+        department: newDepartment,
+        position: newPosition,
+        salary: newSalary,
+      }),
     });
     const data = await res.json();
 
