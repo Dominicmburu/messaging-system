@@ -2,6 +2,11 @@ const loginForm = document.getElementById("loginForm");
 const alertDiv = document.getElementById("alert");
 const forgotLink = document.getElementById("forgotLink");
 
+const resetModal = document.getElementById("resetModal");
+const closeModalBtn = document.getElementById("closeModal");
+const resetEmailInput = document.getElementById("resetEmail");
+const resetBtn = document.getElementById("resetBtn");
+
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   alertDiv.innerHTML = "";
@@ -35,8 +40,26 @@ loginForm.addEventListener("submit", async (e) => {
 
 forgotLink.addEventListener("click", async (e) => {
   e.preventDefault();
-  const email = prompt("Enter your email to reset password:");
-  if (!email) return;
+  resetModal.style.display = "block";
+});
+
+closeModalBtn.addEventListener("click", () => {
+  resetModal.style.display = "none";
+});
+
+window.addEventListener("click", (e) => {
+  if (e.target === resetModal) {
+    resetModal.style.display = "none";
+  }
+});
+
+resetBtn.addEventListener("click", async () => {
+  alertDiv.innerHTML = "";
+  const email = resetEmailInput.value;
+  if (!email) {
+    alertDiv.innerHTML = `<div class="alert error">Please enter an email address.</div>`;
+    return;
+  }
 
   try {
     const res = await fetch(`${BASE_URL}/api/forgot-password`, {
@@ -51,9 +74,9 @@ forgotLink.addEventListener("click", async (e) => {
     }
 
     alertDiv.innerHTML = `<div class="alert success">${data.message}</div>`;
+    resetModal.style.display = "none";
+    resetEmailInput.value = "";
   } catch (err) {
     alertDiv.innerHTML = `<div class="alert error">${err.message}</div>`;
   }
 });
-
-

@@ -1,9 +1,9 @@
-/* Basic styles for demonstration */
-
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+  background-color: #03011d;
+  color: #ffffff;
 }
 
 .container {
@@ -34,6 +34,53 @@ select {
 button {
   padding: 10px;
   cursor: pointer;
+  margin-top: 10px;
+}
+
+#forgotLink {
+  color: #8d8c8c;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal button{
+  background-color: #423d85;
+  border: none;
+  color: white;
+}
+
+.modal-content {
+  background-color: #050233;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 5px;
+  width: 300px;
+  position: relative;
+}
+
+.close {
+  color: #aaa;
+  font-size: 24px;
+  font-weight: bold;
+  float: right;
+  cursor: pointer;
+  margin-top: -10px;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
 }
 
 .alert {
@@ -54,16 +101,24 @@ button {
 }
 
 nav {
-  background-color: #f2f2f2;
+  background-color: #423d85;
   padding: 10px;
 }
 
 nav a {
   margin-right: 15px;
   text-decoration: none;
-  color: #333;
+  color: #ffffff;
 }
 
 nav a:hover {
   text-decoration: underline;
+}
+
+
+.content-div{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }

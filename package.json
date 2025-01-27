@@ -2,10 +2,10 @@
   "name": "messaging_system",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "test": "jest",
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
@@ -14,7 +14,11 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "jest": "^29.7.0",
     "node-fetch": "^3.3.2",
     "nodemailer": "^6.10.0"
+  },
+  "devDependencies": {
+    "supertest": "^7.0.0"
   }
 }
