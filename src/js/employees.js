@@ -188,3 +188,13 @@ async function deleteEmployee(id) {
 }
 
 loadEmployees();
+
+module.exports ={ 
+  getElements, 
+  showUpdateModal, 
+  showMessage, 
+  showConfirm, 
+  createEmployee, 
+  loadEmployees, 
+  updateEmployee, 
+  deleteEmployee }

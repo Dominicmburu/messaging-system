@@ -1,10 +1,6 @@
 const request = require("supertest");
 const { app, users, messagesStore } = require("./server");
 
-beforeEach(() => {
-  users.length = 0; 
-  messagesStore.length = 0;
-});
 
 describe("Server Routes", () => {
   describe("POST /api/register", () => {
@@ -227,6 +223,8 @@ describe("Server Routes", () => {
       expect(user.password).toBe("newpassword123");
       expect(user.resetToken).toBeNull();
     });
+
+    let users = [];
   
     it("should return 400 for invalid token", async () => {
       users.push({
