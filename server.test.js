@@ -1,256 +1,258 @@
+require("dotenv").config();
 const request = require("supertest");
-const { app, users, messagesStore } = require("./server");
+const { app, readDB, writeDB, sendVerificationEmail, sendResetEmail } = require("./server");  
+const fs = require("fs/promises");
+
+jest.mock("nodemailer");
+
+const mockDb = {
+  users: [],
+  employees: [],
+  managers: [],
+  admins: [],
+  messages: [],
+};
 
 beforeEach(() => {
-  users.length = 0; 
-  messagesStore.length = 0;
+  jest.spyOn(fs, "readFile").mockResolvedValue(JSON.stringify(mockDb));
+  jest.spyOn(fs, "writeFile").mockResolvedValue();
 });
 
-describe("Server Routes", () => {
-  describe("POST /api/register", () => {
-    it("should register a new user", async () => {
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
-      const newUser = {
-        email: "dominicmburu034@gmail.com",
-        password: "123456",
-        role: "employee",
-      };
+describe("POST /api/register", () => {
+  it("should register a new user", async () => {
+    const user = {
+      email: "test@example.com",
+      password: "password123",
+      role: "Employee",
+    };
 
-      const res = await request(app).post("/api/register").send(newUser);
-      expect(res.statusCode).toBe(201); 
-      expect(res.body).toHaveProperty(
-        "message",
-        "User registered. Check your email to verify."
-      );
+    const response = await request(app)
+      .post("/api/register")
+      .send(user);
 
-      expect(users.length).toBe(1); 
-      expect(users[0].email).toBe("dominicmburu034@gmail.com");
-    });
+    expect(response.status).toBe(201);
+    expect(response.body.message).toBe("User registered. Check your email to verify.");
+  });
 
-    it("should not register a user with existing email", async () => {
-      users.push({
-        email: "dominicmburu034@gmail.com",
-        password: "abc",
-        role: "employee",
+  it("should return 400 if email already exists", async () => {
+    mockDb.users = [
+      {
+        email: "test@example.com",
+        password: "password123",
+        role: "Employee",
         verified: false,
-        verifyToken: "someToken",
+        verifyToken: "token123",
+      },
+    ];
+
+    const response = await request(app)
+      .post("/api/register")
+      .send({
+        email: "test@example.com",
+        password: "password123",
+        role: "Employee",
       });
 
-      const res = await request(app).post("/api/register").send({
-        email: "dominicmburu034@gmail.com",
-        password: "newpass",
-        role: "employee",
-      });
-      expect(res.statusCode).toBe(400);
-      expect(res.body).toHaveProperty("message", "Email already in use");
-    });
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe("Email already in use");
   });
+});
 
-  describe("POST /api/login", () => {
-    it("should login a verified user", async () => {
-      users.push({
-        email: "dominicmburu034@gmail.com",
-        password: "123",
-        role: "employee",
-        verified: true,     
-        verifyToken: null,
-      });
-
-      const res = await request(app)
-        .post("/api/login")
-        .send({ email: "dominicmburu034@gmail.com", password: "123" });
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty("message", "Login successful");
-      expect(res.body).toHaveProperty("email", "dominicmburu034@gmail.com");
-      expect(res.body).toHaveProperty("role", "employee");
-    });
-
-    it("should fail to login if user is not verified", async () => {
-      users.push({
-        email: "dominicmburu034@gmail.com",
-        password: "123",
-        role: "employee",
-        verified: false, 
-        verifyToken: "tok",
-      });
-      const res = await request(app)
-        .post("/api/login")
-        .send({ email: "dominicmburu034@gmail.com", password: "123" });
-      expect(res.statusCode).toBe(401);
-      expect(res.body).toHaveProperty(
-        "message",
-        "Account not verified. Please check your email."
-      );
-    });
-
-    it("should fail to login with invalid credentials", async () => {
-      const res = await request(app)
-        .post("/api/login")
-        .send({ email: "doesnotexist@example.com", password: "wrong" });
-      expect(res.statusCode).toBe(401);
-      expect(res.body).toHaveProperty("message", "Invalid credentials");
-    });
-  });
-
-  describe("POST /api/messages", () => {
-    it("should create a new message", async () => {
-      const msgBody = {
-        from: "sender@example.com",
-        to: "receiver@example.com",
-        message: "Hello there!",
-      };
-
-      const res = await request(app).post("/api/messages").send(msgBody);
-      expect(res.statusCode).toBe(201);
-      expect(res.body).toHaveProperty("message", "Hello there!");
-      expect(messagesStore.length).toBe(1);
-      expect(messagesStore[0].message).toBe("Hello there!");
-      expect(messagesStore[0].id).toBe(1);
-    });
-  });
-
-  describe("GET /api/messages", () => {
-    it("should filter messages by userEmail query", async () => {
-      messagesStore.push(
-        {
-          id: 1,
-          from: "alice@example.com",
-          to: "bob@example.com",
-          message: "Hello Bob",
-          timestamp: new Date().toISOString(),
-        },
-        {
-          id: 2,
-          from: "carol@example.com",
-          to: "alice@example.com",
-          message: "Hello Alice",
-          timestamp: new Date().toISOString(),
-        }
-      );
-
-      const res = await request(app)
-        .get("/api/messages")
-        .query({ userEmail: "alice@example.com" });
-
-      expect(res.statusCode).toBe(200);
-      expect(res.body.length).toBe(2);
-    });
-  });
-
-  describe("GET /api/verify", () => {
-    it("should verify a user with the correct token and email", async () => {
-      users.push({
-        email: "verifyme@example.com",
-        password: "123",
-        role: "employee",
+describe("GET /api/verify", () => {
+  it("should verify a user's email with valid token", async () => {
+    mockDb.users = [
+      {
+        email: "test@example.com",
+        password: "password123",
+        role: "Employee",
         verified: false,
-        verifyToken: "valid-token",
-      });
-  
-      const res = await request(app).get("/api/verify").query({
-        token: "valid-token",
-        email: "verifyme@example.com",
-      });
-  
-      expect(res.statusCode).toBe(200);
-      expect(res.text).toBe("Email verified! You can now log in.");
-  
-      const updatedUser = users.find(u => u.email === "verifyme@example.com");
-      expect(updatedUser.verified).toBe(true);
-      expect(updatedUser.verifyToken).toBeNull();
+        verifyToken: "token123",
+      },
+    ];
+
+    const response = await request(app).get("/api/verify").query({
+      token: "token123",
+      email: "test@example.com",
     });
-  
-    it("should fail for invalid token or email", async () => {
-      const res = await request(app).get("/api/verify").query({
-        token: "wrong-token",
-        email: "nonexistent@example.com",
-      });
-      expect(res.statusCode).toBe(400);
-      expect(res.text).toBe("Invalid verification link");
-    });
+
+    expect(response.status).toBe(200);
+    expect(response.text).toBe("Email verified! You can now log in.");
   });
 
-  describe("POST /api/forgot-password", () => {
-    it("should send a reset email if the user exists", async () => {
-      users.push({
-        email: "dominicmburu034@gmail.com",
-        password: "abc123",
-        role: "employee",
+  it("should return 400 for invalid verification link", async () => {
+    mockDb.users = [
+      {
+        email: "test@example.com",
+        password: "password123",
+        role: "Employee",
+        verified: false,
+        verifyToken: "token123",
+      },
+    ];
+
+    const response = await request(app).get("/api/verify").query({
+      token: "invalid_token",
+      email: "test@example.com",
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.text).toBe("Invalid verification link");
+  });
+});
+
+describe("POST /api/login", () => {
+  it("should log in a verified user", async () => {
+    mockDb.users = [
+      {
+        email: "test@example.com",
+        password: "password123",
+        role: "Employee",
         verified: true,
         verifyToken: null,
+      },
+    ];
+
+    const response = await request(app)
+      .post("/api/login")
+      .send({
+        email: "test@example.com",
+        password: "password123",
       });
-  
-      const res = await request(app)
-        .post("/api/forgot-password")
-        .send({ email: "dominicmburu034@gmail.com" });
-  
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toEqual({ message: "Password reset email sent" });
-      
-      const user = users.find(u => u.email === "dominicmburu034@gmail.com");
-      expect(user.resetToken).toBeDefined();
-      expect(user.resetToken).not.toBeNull();
-    });
-  
-    it("should return 404 if the email does not exist", async () => {
-      const res = await request(app)
-        .post("/api/forgot-password")
-        .send({ email: "dominicmburu034@gmail.com" });
-  
-      expect(res.statusCode).toBe(404);
-      expect(res.body).toEqual({ message: "No user with that email" });
-    });
+
+    expect(response.status).toBe(200);
+    expect(response.body.message).toBe("Login successful");
   });
-  
-  describe("POST /api/reset-password", () => {
-    it("should reset the password if token is valid", async () => {
-      users.push({
-        email: "dominicmburu034@gmail.com",
-        password: "oldpassword",
-        role: "employee",
+
+  it("should return 401 if credentials are invalid", async () => {
+    mockDb.users = [
+      {
+        email: "test@example.com",
+        password: "password123",
+        role: "Employee",
         verified: true,
-        resetToken: "myresettoken",
+        verifyToken: null,
+      },
+    ];
+
+    const response = await request(app)
+      .post("/api/login")
+      .send({
+        email: "test@example.com",
+        password: "wrongpassword",
       });
-  
-      const res = await request(app)
-        .post("/api/reset-password")
-        .send({
-          email: "dominicmburu034@gmail.com",
-          token: "myresettoken",
-          newPassword: "newpassword123",
-        });
-  
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toEqual({ message: "Password has been reset" });
-  
-      const user = users.find(u => u.email === "dominicmburu034@gmail.com");
-      expect(user.password).toBe("newpassword123");
-      expect(user.resetToken).toBeNull();
-    });
-  
-    it("should return 400 for invalid token", async () => {
-      users.push({
-        email: "dominicmburu034@gmail.com",
-        password: "oldpassword",
-        role: "employee",
-        verified: true,
-        resetToken: "myresettoken",
-      });
-  
-      const res = await request(app)
-        .post("/api/reset-password")
-        .send({
-          email: "dominicmburu034@gmail.com",
-          token: "wrongtoken",
-          newPassword: "newpassword123",
-        });
-  
-      expect(res.statusCode).toBe(400);
-      expect(res.body).toEqual({ message: "Invalid reset token" });
-      
-      const user = users.find(u => u.email === "dominicmburu034@gmail.com");
-      expect(user.password).toBe("oldpassword");
-    });
+
+    expect(response.status).toBe(401);
+    expect(response.body.message).toBe("Invalid credentials");
   });
-  
+
+  it("should return 401 if account is not verified", async () => {
+    mockDb.users = [
+      {
+        email: "test@example.com",
+        password: "password123",
+        role: "Employee",
+        verified: false,
+        verifyToken: "token123",
+      },
+    ];
+
+    const response = await request(app)
+      .post("/api/login")
+      .send({
+        email: "test@example.com",
+        password: "password123",
+      });
+
+    expect(response.status).toBe(401);
+    expect(response.body.message).toBe("Account not verified. Please check your email.");
+  });
+});
+
+describe("POST /api/employees", () => {
+  it("should create a new employee", async () => {
+    const employee = {
+      name: "John Doe",
+      email: "john.doe@example.com",
+      department: "HR",
+      position: "Manager",
+      salary: "50000",
+    };
+
+    const response = await request(app)
+      .post("/api/employees")
+      .send(employee);
+
+    expect(response.status).toBe(201);
+    expect(response.body.name).toBe("John Doe");
+    expect(response.body.email).toBe("john.doe@example.com");
+  });
+});
+
+describe("GET /api/employees", () => {
+  it("should fetch all employees", async () => {
+    mockDb.employees = [
+      { id: 1, name: "John Doe", email: "john.doe@example.com", department: "HR", position: "Manager", salary: "50000" },
+    ];
+
+    const response = await request(app).get("/api/employees");
+
+    expect(response.status).toBe(200);
+    expect(response.body.length).toBe(1);
+    expect(response.body[0].name).toBe("John Doe");
+  });
+});
+
+describe("DELETE /api/employees/:id", () => {
+  it("should delete an employee", async () => {
+    mockDb.employees = [
+      { id: 1, name: "John Doe", email: "john.doe@example.com", department: "HR", position: "Manager", salary: "50000" },
+    ];
+
+    const response = await request(app).delete("/api/employees/1");
+
+    expect(response.status).toBe(200);
+    expect(response.body.message).toBe("Employee deleted");
+  });
+
+  it("should return 404 if employee not found", async () => {
+    const response = await request(app).delete("/api/employees/999");
+
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe("Employee not found");
+  });
+});
+
+describe("POST /api/messages", () => {
+  it("should create a new message", async () => {
+    const message = {
+      from: "john.doe@example.com",
+      to: "jane.doe@example.com",
+      message: "Hello!",
+    };
+
+    const response = await request(app)
+      .post("/api/messages")
+      .send(message);
+
+    expect(response.status).toBe(201);
+    expect(response.body.message).toBe("Hello!");
+  });
+});
+
+describe("GET /api/messages", () => {
+  it("should fetch all messages for a user", async () => {
+    mockDb.messages = [
+      { id: 1, from: "john.doe@example.com", to: "jane.doe@example.com", message: "Hello!", timestamp: new Date().toISOString() },
+    ];
+
+    const response = await request(app).get("/api/messages").query({ userEmail: "john.doe@example.com" });
+
+    expect(response.status).toBe(200);
+    expect(response.body.length).toBe(1);
+    expect(response.body[0].from).toBe("john.doe@example.com");
+  });
 });

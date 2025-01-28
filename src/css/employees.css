@@ -1,6 +1,3 @@
-/* employees.css */
-
-/* RESET / BASE STYLES */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -13,7 +10,6 @@ body {
   color: #333;
 }
 
-/* NAVIGATION BAR */
 nav {
   background-color: #2d3e50;
   padding: 10px;
@@ -32,9 +28,8 @@ nav a:hover {
   text-decoration: underline;
 }
 
-/* CONTAINER */
 .container {
-  width: 600px; /* adjust as needed */
+  width: 600px; 
   margin: 30px auto;
   background-color: #fff;
   padding: 20px;
@@ -47,14 +42,12 @@ nav a:hover {
   text-align: center;
 }
 
-/* ALERT MESSAGE AREA */
 #alert {
   margin-bottom: 15px;
   text-align: center;
   min-height: 20px;
 }
 
-/* CREATE FORM */
 #createForm {
   display: flex;
   flex-wrap: wrap;
@@ -86,12 +79,10 @@ nav a:hover {
   background-color: #1b2733;
 }
 
-/* EMPLOYEES LIST */
 #employeesList {
   margin-top: 10px;
 }
 
-/* For each employee card (optional approach) */
 #employeesList div.employee-card {
   border: 1px solid #ccc;
   border-radius: 3px;
@@ -133,23 +124,21 @@ nav a:hover {
   background-color: #c2185b;
 }
 
-/* HEADERS */
 h2 {
   margin-top: 20px;
   margin-bottom: 10px;
   color: #333;
 }
 
-/* MODAL STYLES */
 .modal {
-  display: none; /* Hidden by default */
+  display: none; 
   position: fixed;
   z-index: 9999;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  overflow: auto; /* Enable scroll if needed */
+  overflow: auto; 
   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent backdrop */
   justify-content: center;
   align-items: center;
@@ -161,13 +150,12 @@ h2 {
   padding: 20px;
   border-radius: 6px;
   width: 300px;
-  max-width: 90%; /* For smaller screens */
+  max-width: 90%; 
   position: relative;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   text-align: center;
 }
 
-/* Buttons inside modal */
 .modal-content button {
   padding: 8px 15px;
   border: none;
@@ -184,12 +172,10 @@ h2 {
   background-color: #1b2733;
 }
 
-/* HEADERS IN MODAL */
 .modal-content h3 {
   margin-bottom: 10px;
 }
 
-/* INPUTS IN MODAL */
 .modal-content input[type="text"] {
   width: 100%;
   padding: 8px;
@@ -199,13 +185,11 @@ h2 {
   font-size: 14px;
 }
 
-/* ALERT or CONFIRM MESSAGES INSIDE MODAL */
 .modal-content p {
   margin-bottom: 15px;
   line-height: 1.4;
 }
 
-/* EXAMPLES OF ALERT BOX STYLES (OPTIONAL) */
 .alert {
   margin: 10px 0;
   padding: 10px;

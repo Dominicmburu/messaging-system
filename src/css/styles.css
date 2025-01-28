@@ -1,4 +1,3 @@
-/* Reset or base styles */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -7,13 +6,12 @@
 
 body {
   font-family: Arial, sans-serif;
-  background-color: #01011f; /* WhatsApp-like background */
+  background-color: #01011f;
   color: #333;
 }
 
-/* Top bar that looks like WhatsApp's green */
 .chat-nav {
-  background-color: #0d0c46; /* WhatsApp green */
+  background-color: #0d0c46;
   color: #fff;
   display: flex;
   align-items: center;
@@ -52,16 +50,16 @@ body {
 #alert.chat-alert {
   padding: 5px;
   text-align: center;
-  background-color: #ffc107; /* or any color you like */
+  background-color: #ffc107; 
   color: #000;
-  display: none; /* hidden by default; show via JS if needed */
+  display: none; 
 }
 
 .chat-messages {
   flex: 1;
   padding: 10px;
   overflow-y: auto;
-  background-color: #030731; /* typical chat background color */
+  background-color: #030731;
 }
 
 .chat-bubble {
@@ -74,7 +72,7 @@ body {
 }
 
 .chat-bubble.outgoing {
-  background-color: #c6c9f8; /* WhatsApp green bubble */
+  background-color: #c6c9f8;
   margin-left: auto;
   text-align: left;
 }
@@ -93,7 +91,6 @@ body {
   text-align: right;
 }
 
-/* Input area at the bottom */
 .chat-input-area {
   display: flex;
   gap: 5px;
@@ -119,7 +116,7 @@ body {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  background-color: #075e54; /* match top bar color */
+  background-color: #075e54; 
   color: #fff;
   font-weight: bold;
   flex-shrink: 0;
@@ -129,7 +126,6 @@ body {
   background-color: #0a7a65;
 }
 
-/* Example alert styles if needed */
 .alert {
   margin: 10px 0;
   padding: 10px;
