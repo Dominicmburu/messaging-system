@@ -51,10 +51,10 @@ async function loadMessages() {
       msgDiv.style.margin = "5px";
       msgDiv.style.padding = "5px";
       msgDiv.innerHTML = `
-            <p><strong>From:</strong> ${msg.from}</p>
+            <p class="from"><strong>From:</strong> ${msg.from}</p>
             <p><strong>To:</strong> ${msg.to}</p>
-            <p>${msg.message}</p>
-            <small>${new Date(msg.timestamp).toLocaleString()}</small>
+            <p class="msg">${msg.message}</p>
+            <small class="time">${new Date(msg.timestamp).toLocaleString()}</small>
           `;
       messagesContainer.appendChild(msgDiv);
     });

@@ -212,3 +212,13 @@ async function deleteEmployee(id) {
 }
 
 loadEmployees();
+
+// module.exports 
+// = {
+//   loadEmployees,
+//   showUpdateModal,
+//   showMessage,
+//   showConfirm,
+//   deleteEmployee
+// };
+

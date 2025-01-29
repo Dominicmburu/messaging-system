@@ -151,3 +151,15 @@ body {
   background-color: rgb(26, 26, 65);
   color: #fff;
 }
+
+.from{
+  color: #d7ee05;
+}
+
+.msg{
+  color: #0dda1b;
+}
+
+.time{
+  color: #8a8a8a;
+}

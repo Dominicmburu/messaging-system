@@ -5,25 +5,25 @@
     <link rel="stylesheet" href="./css/index.css" />
   </head>
   <body>
-    <nav>
+    <nav data-cy="nav">
       <a href="index.html">Login</a>
       <a href="register.html">Register</a>
     </nav>
 
     <div class="container">
-      <h1>Login</h1>
-      <div id="alert"></div>
+      <h1 data-cy="login-title">Login</h1>
+      <div data-cy="alert" id="alert"></div>
       <form id="loginForm">
-        <label for="email">Email</label>
-        <input type="email" id="email" required />
+        <label data-cy="email-label" for="email">Email</label>
+        <input data-cy="email-input" type="email" id="email"  />
 
-        <label for="password">Password</label>
-        <input type="password" id="password" required />
+        <label data-cy="password-label" for="password">Password</label>
+        <input data-cy="password-input" type="password" id="password" />
 
-        <button type="submit">Login</button>
+        <button data-cy="submit-button" type="submit">Login</button>
       </form>
 
-      <p><a href="#" id="forgotLink">Forgot Password?</a></p>
+      <p><a href="#" id="forgotLink" data-cy="forgotLink">Forgot Password?</a></p>
     </div>
 
     <div id="resetModal" class="modal">

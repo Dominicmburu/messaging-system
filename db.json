@@ -20,6 +20,13 @@
       "role": "Manager",
       "verified": true,
       "verifyToken": null
+    },
+    {
+      "email": "dominicmburu034@gmail.com",
+      "password": "123456",
+      "role": "Manager",
+      "verified": true,
+      "verifyToken": null
     }
   ],
   "employees": [
@@ -38,57 +45,45 @@
       "department": "",
       "position": "",
       "salary": ""
+    },
+    {
+      "id": 3,
+      "name": "Kelvin",
+      "email": "koechkelvin2001@gmail.com",
+      "department": "QA",
+      "position": "Admin",
+      "salary": "10000000"
     }
   ],
   "managers": [
     {
       "id": 1,
       "email": "mburudominic63@gmail.com"
+    },
+    {
+      "id": 2,
+      "email": "kelvinkoech2001@gmail.com"
+    },
+    {
+      "id": 3,
+      "email": "dominicmburu034@gmail.com"
     }
   ],
   "admins": [],
   "messages": [
     {
       "id": 1,
-      "from": "oliviamarjorie787@gmail.com",
-      "to": "mburudominic381@gmail.com",
+      "from": "mburudominic381@gmail.com",
+      "to": "oliviamarjorie787@gmail.com",
       "message": "hello",
-      "timestamp": "2025-01-27T17:54:53.685Z"
+      "timestamp": "2025-01-28T09:30:10.222Z"
     },
     {
       "id": 2,
-      "from": "mburudominic381@gmail.com",
-      "to": "oliviamarjorie787@gmail.com",
+      "from": "oliviamarjorie787@gmail.com",
+      "to": "mburudominic381@gmail.com",
       "message": "am good",
-      "timestamp": "2025-01-27T17:55:08.260Z"
-    },
-    {
-      "id": 3,
-      "from": "mburudominic63@gmail.com",
-      "to": "oliviamarjorie787@gmail.com",
-      "message": "hey",
-      "timestamp": "2025-01-27T17:56:30.591Z"
-    },
-    {
-      "id": 4,
-      "from": "mburudominic381@gmail.com",
-      "to": "oliviamarjorie787@gmail.com",
-      "message": "hello",
-      "timestamp": "2025-01-27T18:04:09.699Z"
-    },
-    {
-      "id": 5,
-      "from": "mburudominic381@gmail.com",
-      "to": "oliviamarjorie787@gmail.com",
-      "message": "am good",
-      "timestamp": "2025-01-27T18:08:35.335Z"
-    },
-    {
-      "id": 6,
-      "from": "mburudominic381@gmail.com",
-      "to": "oliviamarjorie787@gmail.com",
-      "message": "am good",
-      "timestamp": "2025-01-27T18:08:44.922Z"
+      "timestamp": "2025-01-28T09:31:50.590Z"
     }
   ]
 }
